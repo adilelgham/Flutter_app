@@ -1,6 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'settings.dart';
+import 'listOfProducts.dart';
 
 void main() => runApp(MyApp());
+
+
 
 class MyApp extends StatelessWidget {
   @override
@@ -11,33 +18,65 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-class Home extends StatelessWidget {
-  const Home({
-    Key key,
-  }) : super(key: key);
-
-  void _showDialog(BuildContext context, {String title, String msg}) {
-    final dialog = AlertDialog(
-      title: Text(title),
-      content: Text(msg),
-      actions: <Widget>[
-        RaisedButton(
-          color: Colors.teal,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text(
-            'Close',
-            style: TextStyle(
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ],
-    );
-    showDialog(context: context, builder: (x) => dialog);
+class Home extends StatefulWidget{
+  MainPage createState()=> MainPage();
+}
+// ignore: must_be_immutable
+class MainPage extends State<Home> {
+  File imageFile;
+  _openGallary(BuildContext context) async{
+    // ignore: deprecated_member_use
+    var picture = await ImagePicker.pickImage(source: ImageSource.gallery);
+    this.setState( (){
+      imageFile = picture;
+    });
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context)=>listOfProducts()));
   }
+
+  _openCamera(BuildContext context) async{
+    // ignore: deprecated_member_use
+    var picture = await ImagePicker.pickImage(source: ImageSource.camera);
+    this.setState( (){
+      imageFile = picture;
+    });
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context)=>listOfProducts()));
+  }
+
+  _decideImageView(){
+    if(imageFile == null){
+        return Text('No Image Selected');
+    } else{
+      Image.file(imageFile, width: 300, height: 300);
+    }
+  }
+Future<void> _showChoiceDialog(BuildContext context){
+  return showDialog(context: context,builder: (BuildContext context){
+    return AlertDialog(
+      title: Text("Maak een keuze"),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: <Widget>[
+          GestureDetector(
+            child: Text("Galerij"),
+            onTap: (){
+              _openGallary(context);
+            },
+          ),
+            Padding(padding: EdgeInsets.all(6.0)),
+            GestureDetector(
+              child: Text("Camera"),
+              onTap: (){
+                _openCamera(context);
+              },
+            )
+          ]
+        )
+      )
+    );
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -80,21 +119,27 @@ class Home extends StatelessWidget {
                 radius: 60,
                 backgroundImage: AssetImage('images/CameraCarrefour.jpg'),
               ),
-              ButtonBar(children: <Widget>[
-                FlatButton(
+
+                  RaisedButton(
                     child: Icon(
                       Icons.settings,
                       color: Colors.teal,
                     ),
-                    color: Colors.blue,
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => Settingsroute()),
+                    onPressed: (){
+                      Navigator.push(context,
+                      MaterialPageRoute(builder: (context)=>Settings())
                       );
-                    }),
-              ])
+                    },
+                  ),
+                  RaisedButton(onPressed: () {
+                    _showChoiceDialog(context);
+                  },child: Icon(
+                    Icons.camera_alt_outlined,
+                    color: Colors.teal,
+                  ),
+
+                  ),
+
             ])));
   }
 }
@@ -144,3 +189,5 @@ class Settingsroute extends StatelessWidget {
             ]));
   }
 }
+
+
