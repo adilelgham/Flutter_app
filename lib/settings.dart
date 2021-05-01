@@ -2,23 +2,40 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'main.dart';
 
-class Settings extends StatelessWidget {
+class Settings extends StatefulWidget {
+  SettingPage createState() => SettingPage();
+}
+
+class SettingPage extends State<Settings> {
+  int colorGroupValue;
+  int group;
+  static int _appBarColor;
+  _checkColor(){
+  if(_appBarColor == null){
+  _appBarColor = 0xff26c6da;
+  }
+  }
+  int appBarColor() => _appBarColor;
+
   @override
   Widget build(BuildContext context) {
+    _checkColor();
     return Scaffold(
         appBar: new AppBar(
           title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text('Carrefour'),
-                Container(
-                  //  margin: const EdgeInsets.only(right: 75),
-                  child: Image.asset(
-                    '/images/c4.png',
-                  ),
-                ),
+                new SizedBox(
+                    height: 100.0,
+                    width: 100.0,
+                    child: new IconButton(
+                      icon: Image.asset('images/c4.png'),
+                      onPressed: () => Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => MyApp())),
+                    ))
               ]),
         ),
+        backgroundColor: Color(SettingPage().appBarColor()),
         body: SafeArea(
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -29,16 +46,37 @@ class Settings extends StatelessWidget {
                   backgroundImage: AssetImage('images/settings.png'),
                 ),
               ),
-              Text('Taal'),
-
-              TextFormField(
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return 'Taal';
-                  }
-                  return null;
-                },
-              ),
+              Text('Kleur'),
+              Row(children: <Widget>[
+                Radio(
+                    value: 0xff26c6da,
+                    groupValue: colorGroupValue,
+                    onChanged: (val) {
+                      colorGroupValue = val;
+                      setState(() {});
+                    }),
+                Text('Blauw')
+              ]),
+              Row(children: <Widget>[
+                Radio(
+                    value: 0xffe53935,
+                    groupValue: colorGroupValue,
+                    onChanged: (val) {
+                      colorGroupValue = val;
+                      setState(() {});
+                    }),
+                Text('Rood')
+              ]),
+              Row(children: <Widget>[
+                Radio(
+                    value: 0xff69f0ae,
+                    groupValue: colorGroupValue,
+                    onChanged: (val) {
+                      colorGroupValue = val;
+                      setState(() {});
+                    }),
+                Text('Groen')
+              ]),
               RaisedButton(
                 child: Icon(
                   Icons.west,
@@ -47,6 +85,18 @@ class Settings extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => MyApp()));
+                },
+              ),
+              RaisedButton(
+                child: Icon(
+                  Icons.send,
+                  color: Colors.teal,
+                ),
+                onPressed: () {
+                  _appBarColor = colorGroupValue;
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => MyApp()));
+
                 },
               ),
             ])));
